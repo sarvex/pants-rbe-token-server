@@ -12,6 +12,7 @@ isort = "*"
 [packages]
 flask = "*"
 google-cloud-iam = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
