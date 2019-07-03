@@ -27,10 +27,49 @@ Instead, we must either:
 
 ## Design
 
-We use Google's [print-access-token](https://cloud.google.com/sdk/gcloud/reference/auth/application-default/print-access-token)
-feature to generate temporary access tokens from a secure server that may be used by Travis, as follows:
+We use Google's [IAM library's `generate_access_token()`](https://googleapis.github.io/google-cloud-python/latest/iam/gapic/v1/api.html)
+feature to generate temporary access tokens from a secure server that may be used by Travis, as follows.
 
-...
+Unique identifiers:
+* This is the main unit of abstraction.
+* An identifier is composed of the GitHub PR / build + the commit SHA + the Travis shard ID, as follows:
+   * Branch builds -  branch name. Accessed via `TRAVIS_BRANCH`.
+   * Pull requests - the PR `number`, e.g. `8711`.
+      In Travis, accessed via `TRAVIS_PULL_REQUEST`.  
+   * Commit SHA - the commit currently being tested. Accessed via `TRAVIS_COMMIT`.
+   * Travis Job ID - the integer Travis uses internally. Accessed via `TRAVIS_JOB_ID`. 
+        * TODO: does this change upon restarts? We need to make sure it doesn't.
+* Why not use a simpler scheme, like only the Travis job ID?
+   * We need to ensure that this identifier belongs to Pants, e.g. that someone is not using a Job
+     ID for an unrelated project.
+
+Token generation flow:
+1. Each Travis shard constructs its unique identifier and sends a `POST` request to our server.
+1. The server checks if this is a valid identifier via the Travis and GitHub APIs. `404` if not.
+1. The server checks via [Google Cloud Firestore in Datastore Mode]() if that identifier has already been used:
+   1. If used `>=3 ` times, reject with a `403`.
+   1. Else, generate token and log the creation time in Google Datastore. 
+
+Retries:
+* Because each _shard_ gets its own token, rather than the entire build, flaky shards may be
+   restarted without restarting the whole build.
+* Tokens may be issued concurrently to avoid having to wait if a shard fails quickly.
+   * TODO: should we tweak this to require the shard to have failed, as confirmed by Travis? 
+      Two downsides: i) can't restart succcesful shards to check for flakiness, and ii) if
+      you see in the log that the shard is going to fail, but it hasn't yet finished, then
+      you can't eagerly cancel it.
+
+Alert system:
+* Core Pants committers will receive email alerts of suspicious behavior under the following circumstances:
+   * TODO: under what circumstances should we email?
+
+Additional policies:
+* Server only allows whitelisted Travis IP addresses, per https://docs.travis-ci.com/user/ip-addresses/.
+   * Environment variable to override this for debugging.
+   * Still at risk of non-Pants Travis builds using our resources.
+* Blacklist identifiers from before we turn on this mechanism.
+    * You should not be able to get a token for a PR from 2018, for example.
+* Pull requests must still be `open` for a token to be regenerated.
 
 ### Rejected alternative: short lived privilege escalation
 
@@ -62,7 +101,6 @@ First:
 $ export FLASK_APP=src/server.py
 $ export FLASK_ENV=development
 $ pipenv shell
-$ flask run
 ```
 
 Then:
@@ -72,6 +110,14 @@ $ flask run
 ```
 
 ## To run linters / auto-formatters
+
+First:
+
+```bash
+$ pipenv shell
+```
+
+Then:
 
 ```bash
 $ isort **/*.py
