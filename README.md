@@ -30,23 +30,17 @@ Instead, we must either:
 We use Google's [IAM library's `generate_access_token()`](https://googleapis.github.io/google-cloud-python/latest/iam/gapic/v1/api.html)
 feature to generate temporary access tokens from a secure server that may be used by Travis, as follows.
 
-Unique identifiers:
+Unique identifier - Travis Job ID:
 * This is the main unit of abstraction.
-* An identifier is composed of the GitHub PR / build + the commit SHA + the Travis shard ID, as follows:
-   * Branch builds -  branch name. Accessed via `TRAVIS_BRANCH`.
-   * Pull requests - the PR `number`, e.g. `8711`.
-      In Travis, accessed via `TRAVIS_PULL_REQUEST`.  
-   * Commit SHA - the commit currently being tested. Accessed via `TRAVIS_COMMIT`.
-   * Travis Job ID - the integer Travis uses internally. Accessed via `TRAVIS_JOB_ID`. 
-        * TODO: does this change upon restarts? We need to make sure it doesn't.
-* Why not use a simpler scheme, like only the Travis job ID?
-   * We need to ensure that this identifier belongs to Pants, e.g. that someone is not using a Job
-     ID for an unrelated project.
+* The ID is stable across restarts of a shard, but changes for any new build.
+* [Travis's API](https://developer.travis-ci.com/resource/job#standard-representation) provides
+   related information for the job, such as the repository, which we can use to validate that 
+   this job belongs to `pantsbuild/pants` and is not from another project.
 
 Token generation flow:
-1. Each Travis shard constructs its unique identifier and sends a `POST` request to our server.
-1. The server checks if this is a valid identifier via the Travis and GitHub APIs. `404` if not.
-1. The server checks via [Google Cloud Firestore in Datastore Mode]() if that identifier has already been used:
+1. Each Travis shard sends a `POST` request to our server with the Travis Job ID.
+1. The server checks if this is a valid job via the Travis API. `404` if not.
+1. The server checks via [Google Cloud Firestore in Datastore Mode]() if that ID has already been used:
    1. If used `>=3 ` times, reject with a `403`.
    1. Else, generate token and log the creation time in Google Datastore. 
 
