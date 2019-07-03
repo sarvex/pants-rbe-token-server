@@ -33,16 +33,10 @@ TravisJobId = int
 def belongs_to_pantsbuild_pants(job_id: TravisJobId) -> bool:
     travis_response = requests.get(
         f"https://api.travis-ci.org/job/{job_id}",
-        headers={
-            "Travis-API-Version": "3",
-            "Authorization": f"token {os.getenv('TRAVIS_TOKEN')}",
-        },
+        headers={"Travis-API-Version": "3", "Authorization": f"token {os.getenv('TRAVIS_TOKEN')}"},
     )
     try:
-        return (
-            travis_response.json()["repository"]["id"]
-            == pantsbuild_pants_travis_repo_id
-        )
+        return travis_response.json()["repository"]["id"] == pantsbuild_pants_travis_repo_id
     except KeyError:
         return False
 
