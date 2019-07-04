@@ -61,9 +61,10 @@ Additional policies:
 * Server only allows whitelisted Travis IP addresses, per https://docs.travis-ci.com/user/ip-addresses/.
    * Environment variable to override this for debugging.
    * Still at risk of non-Pants Travis builds using our resources.
-* Blacklist identifiers from before we turn on this mechanism.
+* Blacklist Travis Job IDs from before we turn on this mechanism.
     * You should not be able to get a token for a PR from 2018, for example.
 * Pull requests must still be `open` for a token to be regenerated.
+    * TODO: should we use this? Will require using the GitHub PR, which makes the solution more complex.
 
 ### Rejected alternative: short lived privilege escalation
 
