@@ -58,13 +58,12 @@ Alert system:
    * TODO: under what circumstances should we email?
 
 Additional policies:
-* Server only allows whitelisted Travis IP addresses, per https://docs.travis-ci.com/user/ip-addresses/.
-   * Environment variable to override this for debugging.
+* [Google App Engine Firewall](https://cloud.google.com/appengine/docs/standard/python/creating-firewalls) only allows whitelisted Travis IP addresses, per https://docs.travis-ci.com/user/ip-addresses/.
    * Still at risk of non-Pants Travis builds using our resources.
 * Blacklist Travis Job IDs from before we turn on this mechanism.
     * You should not be able to get a token for a PR from 2018, for example.
 * Pull requests must still be `open` for a token to be regenerated.
-    * TODO: should we use this? Will require using the GitHub PR, which makes the solution more complex.
+    * TODO: should we use this? Will require a) getting the Travis Build ID from Travis Job ID, then pinging that resource to get the PR number, then using using the GitHub API to check the PR's `state`. That's a lot of extra code two additional API calls that can go wrong.
 
 ### Rejected alternative: short lived privilege escalation
 
