@@ -21,11 +21,14 @@ $ pipenv install --dev
 
 ### To run
 
+You must first be logged in through the `gcloud` CLI to an account with the appropriate permissions.
+
 First:
 
 ```bash
 $ export FLASK_APP=src/server.py
 $ export FLASK_ENV=development
+$ export TRAVIS_TOKEN_ENCRYPTED='CiQABCLzEBhEt1AZ3jhRvQZ2NA1ulmF76mCSwOacYSotbd6P8oASPwDsoWgyqy0ByNPQt6CM9cOpzeBEOTrCfrVKYvl63HVF7sFNUOQCnNpj6ph0P3FBnGeJ2EiwqogB9jerU/FMFA=='
 $ pipenv shell
 ```
 
