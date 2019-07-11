@@ -51,3 +51,13 @@ $ black **/*.py
 $ mypy **/*.py
 $ pylint **/*.py
 ```
+
+### To deploy
+The site is hosted at `https://pants-remoting-beta.appspot.com`.
+
+1. Install the [GCloud SDK / CLI](https://cloud.google.com/sdk/).
+1. `gcloud components install app-engine-python`.
+1. `pipenv lock --requirements > requirements.txt`.
+   * We must run this command to ensure that the `requirements.txt` is still in sync with the 
+   `Pipfile.lock`. This is necessary because Google App Engine only understands `requirements.txt`.
+1. `gcloud app deploy --project pants-remoting-beta`.

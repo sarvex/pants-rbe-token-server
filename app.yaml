@@ -1,0 +1,3 @@
+# See https://cloud.google.com/appengine/docs/standard/python3/config/appref for all options.
+
+runtime: python37

@@ -5,7 +5,8 @@ from datetime import datetime
 
 import flask
 import requests
-from google.cloud import iam_credentials_v1
+
+# from google.cloud import iam_credentials_v1
 
 date_mechanism_first_enabled = datetime(year=2019, month=7, day=3)
 pantsbuild_pants_travis_repo_id = 402860
@@ -21,15 +22,20 @@ rbe_execute_tests_scope = [
 ]
 
 app = flask.Flask(__name__)
-credentials_client = iam_credentials_v1.IAMCredentialsClient()
+# credentials_client = iam_credentials_v1.IAMCredentialsClient()
 
 # TODO: the service_account credentials.
 #  https://googleapis.github.io/google-cloud-python/latest/iam/gapic/v1/api.html
-service_account_path = credentials_client.service_account_path(
-    project="pants-remoting-beta", service_account="foo@gmail.com"
-)
+# service_account_path = credentials_client.service_account_path(
+#     project="pants-remoting-beta", service_account="foo@gmail.com"
+# )
 
 TravisJobId = int
+
+
+@app.route("/")
+def index() -> str:
+    return "App running 🎉"
 
 
 @app.route("/token/generate", methods=["POST"])
