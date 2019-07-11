@@ -1,5 +1,7 @@
-.venv
 *.pyc
-.mypy_cache
+/.venv
+/.mypy_cache
 
 .idea
+.vscode/
+.DS_Store
