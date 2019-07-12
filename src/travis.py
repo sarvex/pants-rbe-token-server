@@ -10,6 +10,7 @@ from google.cloud import kms_v1
 
 DATE_MECHANISM_FIRST_ENABLED = datetime(year=2019, month=7, day=11, tzinfo=timezone.utc)
 PANTSBUILD_PANTS_REPO_ID = 402860
+V2_UNIT_TEST_SHARD_NUMBER = 5
 
 JobId = int
 
@@ -44,6 +45,7 @@ class TravisJob:
     repo_id: int
     created_at: datetime
     started_at: datetime
+    shard_number: int
 
     @classmethod
     def get_from_api(cls, *, job_id: JobId) -> TravisJob:
@@ -65,12 +67,12 @@ class TravisJob:
             repo_id=data["repository"]["id"],
             created_at=parse_datetime(data["created_at"], includes_milliseconds=True),
             started_at=parse_datetime(data["started_at"], includes_milliseconds=False),
+            shard_number=int(data["number"].split(".")[1]),
         )
 
     def is_valid(self) -> bool:
-        """Check that the job belongs to pantsbuild.pants and that it was created after we turned
-          on this mechanism."""
         return (
             self.repo_id == PANTSBUILD_PANTS_REPO_ID
             and self.created_at >= DATE_MECHANISM_FIRST_ENABLED
+            and self.shard_number == V2_UNIT_TEST_SHARD_NUMBER
         )
