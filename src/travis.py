@@ -3,12 +3,12 @@ from __future__ import annotations
 import os
 from base64 import b64decode
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 from google.cloud import kms_v1
 
-DATE_MECHANISM_FIRST_ENABLED = datetime(year=2019, month=7, day=11)
+DATE_MECHANISM_FIRST_ENABLED = datetime(year=2019, month=7, day=11, tzinfo=timezone.utc)
 PANTSBUILD_PANTS_REPO_ID = 402860
 
 JobId = int
@@ -43,6 +43,7 @@ class TravisJob:
     id_: JobId
     repo_id: int
     created_at: datetime
+    started_at: datetime
 
     @classmethod
     def get_from_api(cls, *, job_id: JobId) -> TravisJob:
@@ -53,10 +54,17 @@ class TravisJob:
         if not travis_response.ok:
             travis_response.raise_for_status()
         data = travis_response.json()
+
+        def parse_datetime(iso_formatted_val: str, *, includes_milliseconds: bool) -> datetime:
+            num_extraneous_chars = 5 if includes_milliseconds else 1
+            naive_datetime = datetime.fromisoformat(iso_formatted_val[:-num_extraneous_chars])
+            return naive_datetime.replace(tzinfo=timezone.utc)
+
         return TravisJob(
             id_=job_id,
             repo_id=data["repository"]["id"],
-            created_at=datetime.fromisoformat(data["created_at"][:-5]),
+            created_at=parse_datetime(data["created_at"], includes_milliseconds=True),
+            started_at=parse_datetime(data["started_at"], includes_milliseconds=False),
         )
 
     def is_valid(self) -> bool:

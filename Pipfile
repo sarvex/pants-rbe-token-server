@@ -11,6 +11,7 @@ isort = "*"
 
 [packages]
 flask = "*"
+google-cloud-datastore = "*"
 google-cloud-iam = "*"
 google-cloud-kms = "*"
 requests = "*"
