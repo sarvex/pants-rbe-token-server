@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import requests
 from google.cloud import kms_v1
 
-DATE_MECHANISM_FIRST_ENABLED = datetime(year=2019, month=7, day=11, tzinfo=timezone.utc)
+DATE_MECHANISM_FIRST_ENABLED = datetime(year=2019, month=7, day=15, tzinfo=timezone.utc)
 PANTSBUILD_PANTS_REPO_ID = 402860
 V2_UNIT_TEST_SHARD_NUMBER = 5
 
