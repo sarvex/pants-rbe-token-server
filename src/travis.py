@@ -10,7 +10,6 @@ from google.cloud import kms_v1
 
 DATE_MECHANISM_FIRST_ENABLED = datetime(year=2019, month=7, day=15, tzinfo=timezone.utc)
 PANTSBUILD_PANTS_REPO_ID = 402860
-REMOTE_SHARD_NUMBERS = [5, 6]
 
 JobId = int
 
@@ -74,5 +73,4 @@ class TravisJob:
         return (
             self.repo_id == PANTSBUILD_PANTS_REPO_ID
             and self.created_at >= DATE_MECHANISM_FIRST_ENABLED
-            and self.shard_number in REMOTE_SHARD_NUMBERS
         )
