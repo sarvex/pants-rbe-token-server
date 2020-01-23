@@ -49,7 +49,7 @@ class TravisJob:
     @classmethod
     def get_from_api(cls, *, job_id: JobId) -> TravisJob:
         travis_response = requests.get(
-            f"https://api.travis-ci.org/job/{job_id}",
+            f"https://api.travis-ci.com/job/{job_id}",
             headers={"Travis-API-Version": "3", "Authorization": f"token {TRAVIS_TOKEN}"},
         )
         if not travis_response.ok:
