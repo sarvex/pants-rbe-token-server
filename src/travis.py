@@ -8,8 +8,8 @@ from datetime import datetime, timezone
 import requests
 from google.cloud import kms_v1
 
-DATE_MECHANISM_FIRST_ENABLED = datetime(year=2019, month=7, day=15, tzinfo=timezone.utc)
-PANTSBUILD_PANTS_REPO_ID = 402860
+DATE_MECHANISM_FIRST_ENABLED = datetime(year=2020, month=1, day=22, tzinfo=timezone.utc)
+PANTSBUILD_PANTS_REPO_ID = 12451663
 
 JobId = int
 
@@ -31,7 +31,7 @@ def _get_travis_token() -> str:
     )
     token: str = kms_client.decrypt(
         name=resource_name, ciphertext=b64decode(os.environ[env_var])
-    ).plaintext.decode()
+    ).plaintext.decode().strip()
     return token
 
 

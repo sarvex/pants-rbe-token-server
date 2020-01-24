@@ -28,7 +28,7 @@ First:
 ```bash
 $ export FLASK_APP=src/server.py
 $ export FLASK_ENV=development
-$ export TRAVIS_TOKEN_ENCRYPTED='CiQABCLzEBhEt1AZ3jhRvQZ2NA1ulmF76mCSwOacYSotbd6P8oASPwDsoWgyqy0ByNPQt6CM9cOpzeBEOTrCfrVKYvl63HVF7sFNUOQCnNpj6ph0P3FBnGeJ2EiwqogB9jerU/FMFA=='
+$ export TRAVIS_TOKEN_ENCRYPTED='CiQABCLzEEg7j61hnaT9vSXIT3388+A041quF/7zeg7KBapnm5gSQADsoWgyr5mysMpjLGu3WE9Pq4xXNSMtO0+qEzlvra9FVyuCM0+jmxmCPyAEID3dRH3P7fe2KLqXNqFap7/DV5o='
 $ pipenv shell
 ```
 
