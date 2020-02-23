@@ -64,3 +64,29 @@ The site is hosted at `https://pants-remoting-beta.appspot.com`.
    * We must run this command to ensure that the `requirements.txt` is still in sync with the 
    `Pipfile.lock`. This is necessary because Google App Engine only understands `requirements.txt`.
 1. `gcloud app deploy --project pants-remoting-beta`.
+
+## Networking Considerations
+
+The IP addresses of our CI machines must be whitelisted in our Google App Engine app's firewall.
+
+If networking issues are encountered in CI, you can view the list of Travis CI IPs with:
+
+```bash
+dig +short nat.travisci.net
+```
+
+And the current firewall rules with
+
+```bash
+gcloud --project pants-remoting-beta app firewall-rules list --format=json | \
+  jq '.[] | select(.action=="ALLOW") | .sourceRange' -r
+```
+
+So for example you can find any IPs that should be whitelisted and are not with:
+
+```bash
+comm -23 \
+  <(dig +short nat.travisci.net | sort) \
+  <(gcloud --project pants-remoting-beta app firewall-rules list --format=json | \
+      jq '.[] | select(.action=="ALLOW") | .sourceRange' -r | sort)
+```
