@@ -24,10 +24,7 @@ class JobAttempt:
 
     def _get_prior_start_times(self) -> List[datetime]:
         result = datastore_client.get(self.datastore_key)
-        if result is None:
-            return []
-        prior_start_times: List[datetime] = result["prior_start_times"]
-        return prior_start_times
+        return [] if result is None else result["prior_start_times"]
 
     def already_used(self) -> bool:
         return self.started_at in self._get_prior_start_times()
